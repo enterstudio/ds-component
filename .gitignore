@@ -1,0 +1,5 @@
+node_modules
+.DS_Store
+__integration_tests__/as_global_lib/deploy
+__integration_tests__/as_node_dep/build
+__integration_tests__/as_node_dep/deploy

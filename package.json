@@ -1,0 +1,77 @@
+{
+  "name": "@google/dscc",
+  "libraryName": "dscc",
+  "version": "0.0.1",
+  "main": "lib/dscc.js",
+  "license": "Apache-2.0",
+  "author": "Matt Hamrick",
+  "scripts": {
+    "build": "yarn prettier && webpack && NODE_ENV=production webpack && echo >> lib/dscc.min.js",
+    "build-watch": "onchange \"{src}/**/*.ts\" -- yarn build",
+    "lint": "eslint src/**",
+    "test": "jest",
+    "prettier": "prettier --write \"{src,__tests__}/**/*.ts\"",
+    "prettier-watch": "onchange \"{src,__tests__}/**/*.ts\" -- yarn prettier",
+    "dev": "webpack --progress --colors --watch --env dev"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.2.3",
+    "@types/url-parse": "^1.1.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.3",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.13.1",
+    "eslint-config-google": "^0.9.1",
+    "eslint-loader": "^1.9.0",
+    "jest": "^22.4.2",
+    "onchange": "^3.3.0",
+    "prettier": "^1.12.1",
+    "ts-jest": "^22.4.4",
+    "ts-loader": "^4.2.0",
+    "typescript": "^2.8.1",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.0.14",
+    "yargs": "^10.0.3"
+  },
+  "dependencies": {
+    "url-parse": "^1.4.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "bracketSpacing": false,
+    "arrowParens": "always"
+  },
+  "description": "`dscc` (Data Studio Community Component) is a library to help with the building of community components for Google Data Studio. It can be used as a standalone library, or as a npm dependency.",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:googledatastudio/ds-component.git"
+  },
+  "keywords": [
+    "datastudio",
+    "visualization",
+    "component"
+  ]
+}
