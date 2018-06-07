@@ -334,7 +334,7 @@ export const getHeight = (): number => document.documentElement.clientHeight;
 
 export const getComponentId = (): string => {
   const parsed = parse(window.parent.location.href, true);
-  return parsed.query.id;
+  return parsed.query.componentId;
 };
 
 export const delayedMessage = async (
