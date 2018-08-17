@@ -7,13 +7,14 @@
 
   https://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
+  Unless mind by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
 */
 import {iframeLoaded, subscribeToData} from '../src/impl';
+import * as DS from '../src/data-studio-types';
 
 const DEPLOYMENT_ID = 'my deployment id';
 
@@ -22,7 +23,38 @@ const testMessageRows = {
   comparisonRows: [['(not set)', 198.2720811099253], ['feb', null]],
 };
 
-const testMessageSchema = [
+const testPropertyConfig: DS.ConfigData[] = [
+  {
+    id: 'hi',
+    heading: 'his',
+    elements: [
+      {
+        id: 'firstId',
+        label: 'label for first one',
+        type: DS.ConfigElementType.DIMENSION,
+        options: {
+          max: 1,
+          min: 1,
+          supportedTypes: [],
+          options: [],
+        },
+      },
+      {
+        id: 'thirdId',
+        label: 'label for first one',
+        type: DS.ConfigElementType.METRIC,
+        options: {
+          max: 1,
+          min: 1,
+          supportedTypes: [],
+          options: [],
+        },
+      },
+    ],
+  },
+];
+
+const testMessageSchema: DS.Schema = [
   {
     name: 'c_id',
     label: 'Campaign',
@@ -34,7 +66,7 @@ const testMessageSchema = [
     name: 'a_id',
     label: 'Avg. Order Value',
     concept: 'METRIC',
-    dataType: 'LONG',
+    dataType: 'NUMBER',
     semantic: 'CURRENCY',
     semanticOption: 'USD',
   },
@@ -51,11 +83,12 @@ const testMessageStyle = {
   font: 'auto',
 };
 
-const testMessageData = {
+const testMessageData: DS.Message = {
   type: 'RENDER',
   rows: testMessageRows,
   schema: testMessageSchema,
   style: testMessageStyle,
+  data: testPropertyConfig,
 };
 
 const testMessage = {
@@ -84,11 +117,22 @@ test('onLoadHappens', async () => {
   expect(actual).toEqual('window loaded');
 });
 
-test('subscribeToData works', async () => {
+test('subscribeToData default transform works', async () => {
   const unSub = await subscribeToData((actual) => {
     expect(actual).not.toHaveProperty('data.rows.comparisonRows');
     expect(actual).toHaveProperty('rows');
   });
+  unSub();
+  expect(window.removeEventListener.mock.calls.length).toBeGreaterThan(0);
+});
+
+test('subscribeToData no transform works', async () => {
+  const unSub = await subscribeToData(
+    (actual) => {
+      expect(actual).toHaveProperty('rows.comparisonRows');
+    },
+    {transform: (a) => a}
+  );
   unSub();
   expect(window.removeEventListener.mock.calls.length).toBeGreaterThan(0);
 });
