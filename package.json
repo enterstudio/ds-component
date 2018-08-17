@@ -7,7 +7,7 @@
   "author": "Matt Hamrick",
   "scripts": {
     "build": "yarn prettier && webpack && NODE_ENV=production webpack && echo >> lib/dscc.min.js",
-    "build-watch": "onchange \"{src}/**/*.ts\" -- yarn build",
+    "build-watch": "onchange \"{src,__tests__}/**/*.ts\" -- yarn build",
     "lint": "eslint src/**",
     "test": "jest",
     "prettier": "prettier --write \"{src,__tests__}/**/*.ts\"",
