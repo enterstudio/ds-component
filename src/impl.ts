@@ -18,20 +18,6 @@ import * as parse from 'url-parse';
 import * as Lib from './library-types';
 import * as DS from './data-studio-types';
 
-export const timeout = async (millis: number): Promise<{}> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(millis), millis);
-  });
-};
-
-export const iframeLoaded = async (): Promise<{}> => {
-  return new Promise((resolve, reject) => {
-    window.addEventListener('load', (e) => {
-      resolve(e);
-    });
-  });
-};
-
 export const postMessage = (clientMessage: Lib.ClientMessage) => {
   window.parent.postMessage(clientMessage, '*');
 };
@@ -44,15 +30,6 @@ export const getComponentId = (): string => {
   return parsed.query.componentId;
 };
 
-export const delayedMessage = async (
-  clientMessage: Lib.ClientMessage,
-  millis: number
-) => {
-  await iframeLoaded();
-  await timeout(millis);
-  postMessage(clientMessage);
-};
-
 export interface SubsciptionOptions {
   transform: (componentData: DS.Message) => Lib.TransformedMessage;
 }
@@ -62,7 +39,6 @@ export const subscribeToData = async (
   subscriptionOptions: SubsciptionOptions = {transform: transformData}
 ): Promise<() => void> => {
   const {transform} = subscriptionOptions;
-  await iframeLoaded();
   const onMessage = (message: DS.PostMessage) => {
     if (message.data.type === 'RENDER') {
       let messageData: DS.Message = message.data;

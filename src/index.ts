@@ -15,7 +15,6 @@
 */
 import * as impl from './impl';
 
-export const delayedMessage = impl.delayedMessage;
 export const subscribeToData = impl.subscribeToData;
 export const getWidth = impl.getWidth;
 export const getHeight = impl.getHeight;

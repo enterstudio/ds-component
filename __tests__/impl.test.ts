@@ -97,10 +97,10 @@ const testMessage = {
 
 beforeEach(() => {
   const addEventListenerMock = jest.fn((event, cb) => {
-    if (event === 'load') {
-      cb('window loaded');
-    } else if (event === 'message') {
+    if (event === 'message') {
       cb(testMessage);
+    } else {
+      throw new Error('unsupported event type for testing');
     }
   });
 
@@ -110,11 +110,6 @@ beforeEach(() => {
   window.addEventListener = addEventListenerMock;
   window.parent.postMessage = postMessageMock;
   window.removeEventListener = removeEventListenerMock;
-});
-
-test('onLoadHappens', async () => {
-  const actual = await iframeLoaded();
-  expect(actual).toEqual('window loaded');
 });
 
 test('subscribeToData default transform works', async () => {
