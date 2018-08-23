@@ -9,7 +9,7 @@ To deploy a new version of this to npm:
 ```bash
 yarn install && \
 yarn build && \
-yarn version &&
+yarn version
 ```
 
 + Publish the code to npm
