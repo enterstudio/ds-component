@@ -16,7 +16,7 @@
     "prettier": "prettier --write \"{src,__tests__,examples}/**/*.ts\"",
     "prettier-watch": "onchange \"{src,__tests__,examples}/**/*.ts\" -- yarn prettier",
     "dev": "webpack --progress --colors --watch --env dev",
-    "doc": "typedoc --out docs/ src/"
+    "doc": "typedoc --out docs/ src/ && touch docs/.nojekyll"
   },
   "devDependencies": {
     "@types/jest": "^22.2.3",
