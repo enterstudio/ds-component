@@ -25,7 +25,7 @@ export interface Config {
   /**
    * The data config defined for the component.
    */
-  data: ConfigData;
+  data: ConfigData[];
   /**
    * The style elements required and supported by the component.
    */

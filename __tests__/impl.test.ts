@@ -65,34 +65,36 @@ const testMessage = (numDimensions: number, numMetrics: number): DS.Message => {
   return {
     type: DS.MessageType.RENDER,
     config: {
-      data: {
-        id: 'configId',
-        label: 'configLabel',
-        elements: [
-          {
-            type: DS.ConfigDataElementType.DIMENSION,
-            id: 'dimensions',
-            label: 'configDimension1Label',
-            options: {
-              min: 1,
-              max: numDimensions,
-              supportedTypes: [],
+      data: [
+        {
+          id: 'configId',
+          label: 'configLabel',
+          elements: [
+            {
+              type: DS.ConfigDataElementType.DIMENSION,
+              id: 'dimensions',
+              label: 'configDimension1Label',
+              options: {
+                min: 1,
+                max: numDimensions,
+                supportedTypes: [],
+              },
+              values: dimensionFields.map((a) => a.id),
             },
-            values: dimensionFields.map((a) => a.id),
-          },
-          {
-            type: DS.ConfigDataElementType.METRIC,
-            id: 'metrics',
-            label: 'configMetric1Label',
-            options: {
-              min: 1,
-              max: numMetrics,
-              supportedTypes: [],
+            {
+              type: DS.ConfigDataElementType.METRIC,
+              id: 'metrics',
+              label: 'configMetric1Label',
+              options: {
+                min: 1,
+                max: numMetrics,
+                supportedTypes: [],
+              },
+              values: metricFields.map((a) => a.id),
             },
-            values: metricFields.map((a) => a.id),
-          },
-        ],
-      },
+          ],
+        },
+      ],
       style: {
         id: 'styleId',
         label: 'styleLabel',

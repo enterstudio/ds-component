@@ -157,7 +157,10 @@ const toRowByConfigId = (
   row: Row
 ): RowByConfigId => {
   const fieldRow: RowById = toRowById(indexedFields, row, fieldIds);
-  const concepts = message.config.data.elements.filter(dimensionOrMetric);
+  const dataFields = message.config.data.reduce((acc, data) => {
+    return acc.concat(data.elements);
+  }, []);
+  const concepts = dataFields.filter(dimensionOrMetric);
   return concepts.reduce(
     (rowObjects: RowByConfigId, element: ConfigDataElement) => {
       const rowData = element.values.map(
