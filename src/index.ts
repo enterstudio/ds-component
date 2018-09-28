@@ -167,7 +167,6 @@ const toRowByConfigId = (
         (fieldId: FieldId) => fieldRow[fieldId]
       );
       rowObjects[element.id] = rowData;
-      console.log(rowObjects);
       return rowObjects;
     },
     {}

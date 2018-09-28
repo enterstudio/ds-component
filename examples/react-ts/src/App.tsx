@@ -65,54 +65,65 @@ export default App;
 // setTimeout(() => {
 //   const message: dscc.Message = {
 //     config: {
-//       data: {
-//         elements: [{
+//       data: [
+//         {
+//           elements: [
+//             {
+//               id: 'hi',
+//               label: 'hi',
+//               options: {
+//                 max: 1,
+//                 min: 1,
+//               },
+//               type: dscc.ConfigDataElementType.DIMENSION,
+//               value: ['field1'],
+//             },
+//             {
+//               id: 'there',
+//               label: 'there',
+//               options: {
+//                 max: 1,
+//                 min: 1,
+//               },
+//               type: dscc.ConfigDataElementType.METRIC,
+//               value: ['field2'],
+//             },
+//           ],
 //           id: 'hi',
 //           label: 'hi',
-//           options: {
-//             max: 1,
-//             min: 1,
-//           },
-//           type: dscc.ConfigDataElementType.DIMENSION,
-//           values: [],
-//         }],
-//         id: "hi",
-//         label: "hi",
-//       },
+//         },
+//       ],
 //       style: {
 //         elements: [],
 //         id: 'hi',
 //         label: 'hi',
 //       },
-//       themeStyle: undefined
+//       themeStyle: undefined,
 //     },
 //     dataResponse: {
 //       tables: [
 //         {
 //           fields: ['field1', 'field2'],
-//           rows: [
-//             ['matt', 1],
-//             ['yulan', 3],
-//             ['minhaz', 5],
-//           ],
-//           type: dscc.TableType.DEFAULT,
-//         }
-//       ]
+//           id: dscc.TableType.DEFAULT,
+//           rows: [['matt', 1], ['yulan', 3], ['minhaz', 5]],
+//         },
+//       ],
 //     },
-//     fields: [{
-//       description: 'A person\'s name.',
-//       id: 'field1',
-//       name: 'Name',
-//       type: dscc.FieldType.TEXT,
-//     },
-// {
-//       description: 'A person\'s favorite number.',
-//       id: 'field2',
-//       name: 'Favorite Number',
-//       type: dscc.FieldType.NUMBER,
-//     }
-//   ],
+//     fields: [
+//       {
+//         description: "A person's name.",
+//         id: 'field1',
+//         name: 'Name',
+//         type: dscc.FieldType.TEXT,
+//       },
+//       {
+//         description: "A person's favorite number.",
+//         id: 'field2',
+//         name: 'Favorite Number',
+//         type: dscc.FieldType.NUMBER,
+//       },
+//     ],
 //     type: dscc.MessageType.RENDER,
 //   };
 //   window.parent.postMessage(message, '*');
-// }, 1000)
+// }, 1000);

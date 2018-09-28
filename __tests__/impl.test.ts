@@ -79,7 +79,7 @@ const testMessage = (numDimensions: number, numMetrics: number): DS.Message => {
                 max: numDimensions,
                 supportedTypes: [],
               },
-              values: dimensionFields.map((a) => a.id),
+              value: dimensionFields.map((a) => a.id),
             },
             {
               type: DS.ConfigDataElementType.METRIC,
@@ -90,7 +90,7 @@ const testMessage = (numDimensions: number, numMetrics: number): DS.Message => {
                 max: numMetrics,
                 supportedTypes: [],
               },
-              values: metricFields.map((a) => a.id),
+              value: metricFields.map((a) => a.id),
             },
           ],
         },
