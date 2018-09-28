@@ -234,7 +234,7 @@ export interface Table {
   /**
    * The type of the table.
    */
-  type: TableType;
+  id: TableType;
   /**
    * The [[FieldId]]s of the fields selected by the user.
    */
@@ -271,7 +271,7 @@ export interface ConfigDataElement {
    *
    * This is only defined if the [[ConfigElementType]] is `DIMENSION` or `METRIC`.
    */
-  values: FieldId[];
+  value: FieldId[];
 }
 export interface ConfigStyleElement {
   /**
@@ -318,11 +318,11 @@ export enum ConfigDataElementType {
   /**
    * Renders a metric field element.
    */
-  METRIC = 'METRIC',
+  METRIC = 2,
   /**
    * Renders a dimension field element.
    */
-  DIMENSION = 'DIMENSION',
+  DIMENSION = 1,
   /**
    * Renders a sort field element.
    *
@@ -332,7 +332,7 @@ export enum ConfigDataElementType {
   /**
    * Renders a dropdown that affects the maximum number of results returned.
    */
-  MAX_RESULTS = 'MAX_RESULTS',
+  MAX_RESULTS = 3,
 }
 
 export type DataElementOptions =

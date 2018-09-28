@@ -105,7 +105,7 @@ const testMessage = (numDimensions: number, numMetrics: number): DS.Message => {
     dataResponse: {
       tables: [
         {
-          type: DS.TableType.DEFAULT,
+          id: DS.TableType.DEFAULT,
           fields: fields.map((a) => a.id),
           rows: [1, 2].map((num) => {
             return fields.map((a) => {

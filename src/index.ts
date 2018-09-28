@@ -163,10 +163,11 @@ const toRowByConfigId = (
   const concepts = dataFields.filter(dimensionOrMetric);
   return concepts.reduce(
     (rowObjects: RowByConfigId, element: ConfigDataElement) => {
-      const rowData = element.values.map(
+      const rowData = element.value.map(
         (fieldId: FieldId) => fieldRow[fieldId]
       );
       rowObjects[element.id] = rowData;
+      console.log(rowObjects);
       return rowObjects;
     },
     {}
@@ -184,7 +185,7 @@ const dimensionOrMetric = (element: ConfigDataElement): boolean =>
  * ```
  * dscc.subscribeToData(function(message) {
  *   var rowsById = dscc.rowsByConfigId(message);
- *   consale.log('rowsById', rowsById);
+ *   console.log('rowsById', rowsById);
  * })
  * ```
  */
@@ -200,7 +201,7 @@ export const rowsByConfigId = (message: Message): TablesByType => {
       const tableData: RowByConfigId[] = table.rows.map((row) =>
         toRowByConfigId(message, indexFields, table.fields, row)
       );
-      acc[table.type] = tableData;
+      acc[table.id] = tableData;
       return acc;
     },
     {
