@@ -3,3 +3,8 @@ node_modules
 __integration_tests__/as_global_lib/deploy
 __integration_tests__/as_node_dep/build
 __integration_tests__/as_node_dep/deploy
+_bundles/
+build/
+deploy/
+lib-esm/
+lib/

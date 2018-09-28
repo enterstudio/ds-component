@@ -16,6 +16,7 @@
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const env = process.env.NODE_ENV;
 const pkg = require('./package.json');
+const path = require('path');
 
 let libraryName = pkg.libraryName;
 
@@ -23,7 +24,14 @@ let plugins = [];
 let outputFile;
 if (env === 'production') {
   outputFile = libraryName + '.min.js';
-  plugins.push(new UglifyJsPlugin({sourceMap: true}));
+  plugins.push(new UglifyJsPlugin({
+    sourceMap: false,
+    uglifyOptions: {
+      output: {
+        comments: false
+      }
+    }
+  }));
 } else {
   outputFile = libraryName + '.js';
 }
@@ -33,7 +41,7 @@ module.exports = {
   devtool: 'inline-source-map',
   entry: './src/index.ts',
   output: {
-    path: __dirname + '/lib',
+    path: path.resolve(__dirname, '_bundles'),
     filename: outputFile,
     library: libraryName,
     libraryTarget: 'umd',
