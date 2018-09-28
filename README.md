@@ -79,4 +79,4 @@ cat 'yourComponentFile.js' >> release.js
 ```
 
 [dscv-devsite]: https://developers.google.com/datastudio/visualization/
-[docs]: https://github.com/googledatastudio/ds-component/blob/master/docs/
+[docs]: https://googledatastudio.github.io/ds-component/
