@@ -29,7 +29,7 @@ export interface Config {
   /**
    * The style elements required and supported by the component.
    */
-  style: ConfigStyle;
+  style: ConfigStyle[];
   themeStyle?: ConfigThemeStyle;
 }
 
