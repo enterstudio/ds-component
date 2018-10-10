@@ -38,7 +38,7 @@ import {
 export * from './types';
 
 /**
- * Returns the width of the containing iframe of the vis.
+ * Returns the width (in pixels) of the vis's iframe.
  *
  * Usage:
  * ```
@@ -49,7 +49,7 @@ export * from './types';
 export const getWidth = (): number => document.body.clientWidth;
 
 /**
- * Returns the height of the containing iframe of the vis.
+ * Returns the height (in pixels) of the vis's iframe.
  *
  * Usage:
  * ```
