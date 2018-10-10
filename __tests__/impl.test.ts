@@ -95,11 +95,11 @@ const testMessage = (numDimensions: number, numMetrics: number): DS.Message => {
           ],
         },
       ],
-      style: {
+      style: [{
         id: 'styleId',
         label: 'styleLabel',
         elements: [],
-      },
+      }],
     },
     fields,
     dataResponse: {
