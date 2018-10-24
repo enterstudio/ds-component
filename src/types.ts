@@ -50,6 +50,15 @@ export interface Field {
    * The field type.
    */
   type: FieldType;
+  /**
+   * The field concept.
+   */
+  concept: ConceptType;
+}
+
+export enum ConceptType {
+  METRIC = 'METRIC',
+  DIMENSION = 'DIMENSION',
 }
 
 export interface DataResponse {
@@ -318,11 +327,11 @@ export enum ConfigDataElementType {
   /**
    * Renders a metric field element.
    */
-  METRIC = 2,
+  METRIC = 'METRIC',
   /**
    * Renders a dimension field element.
    */
-  DIMENSION = 1,
+  DIMENSION = 'DIMENSION',
   /**
    * Renders a sort field element.
    *
@@ -332,7 +341,7 @@ export enum ConfigDataElementType {
   /**
    * Renders a dropdown that affects the maximum number of results returned.
    */
-  MAX_RESULTS = 3,
+  MAX_RESULTS = 'MAX_RESULTS',
 }
 
 export type DataElementOptions =
@@ -345,17 +354,17 @@ export enum ConfigStyleElementType {
   /**
    * Renders a text input box.
    */
-  TEXTINPUT = 1,
+  TEXTINPUT = 'TEXTINPUT',
   /**
    * A single select dropdown.
    */
-  SELECT_SINGLE = 2,
+  SELECT_SINGLE = 'SELECT_SINGLE',
   /**
    * Renders a checkbox.
    *
    * Default value: `false`
    */
-  CHECKBOX = 3,
+  CHECKBOX = 'CHECKBOX',
   /**
    * Renders the font color selector.
    *
@@ -363,69 +372,69 @@ export enum ConfigStyleElementType {
    *
    * Default value: `"#000"`.
    */
-  FONT_COLOR = 4,
+  FONT_COLOR = 'FONT_COLOR',
   /**
    * Renders the font size selector.
    *
    * Default value: `"14px"`.
    */
-  FONT_SIZE = 5,
+  FONT_SIZE = 'FONT_SIZE',
   /**
    * Renders the font family selector.
    *
    * Default value: `""`
    */
-  FONT_FAMILY = 6,
+  FONT_FAMILY = 'FONT_FAMILY',
   /**
    * Renders a fill color selector.
    *
    * Acceptable default values: HEX color value.
    */
-  FILL_COLOR = 7,
+  FILL_COLOR = 'FILL_COLOR',
   /**
    * Renders a border color selector.
    *
    * Acceptable default values: HEX color value.
    */
-  BORDER_COLOR = 8,
+  BORDER_COLOR = 'BORDER_COLOR',
   /**
    * Renders an axis color selector.
    *
    * Acceptable default values: HEX color value.
    */
-  AXIS_COLOR = 9,
+  AXIS_COLOR = 'AXIS_COLOR',
   /**
    * Renders a grid color selector.
    *
    * Acceptable default values: HEX color value.
    */
-  GRID_COLOR = 10,
+  GRID_COLOR = 'GRID_COLOR',
   /**
    * Renders an opacity selector.
    */
-  OPACITY = 11,
+  OPACITY = 'OPACITY',
   /**
    * Renders a line weight picker.
    */
-  LINE_WEIGHT = 12,
+  LINE_WEIGHT = 'LINE_WEIGHT',
   /**
    * Renders a line style picker.
    *
    * Acceptable default values: `"solid"`, `"dashed"`, `"dotted"`, or `"double"`.
    */
-  LINE_STYLE = 13,
+  LINE_STYLE = 'LINE_STYLE',
   /**
    * Renders a border radius selector.
    */
-  BORDER_RADIUS = 14,
+  BORDER_RADIUS = 'BORDER_RADIUS',
   /**
    * Renders an interval selector.
    */
-  INTERVAL = 15,
+  INTERVAL = 'INTERVAL',
   /**
    * Renders a radio select with pre-defined values.
    */
-  SELECT_RADIO = 16,
+  SELECT_RADIO = 'SELECT_RADIO',
 }
 
 export type RowValue = string | number | boolean;
