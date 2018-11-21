@@ -90,7 +90,7 @@
     <span class="hljs-keyword">const</span> height = getHeight();
     <span class="hljs-built_in">console</span>.log(message)
     <span class="hljs-comment">// Create component as needed using message, height, and width...</span>
-  })
+  }, {<span class="hljs-attr">transform</span>: dscc.tableTransform})
 }
 main()</code></pre>
 				<h3 id="through-copy-paste">Through Copy/Paste</h3>
@@ -104,7 +104,7 @@ dscc.subscribeToData(<span class="hljs-function"><span class="hljs-keyword">func
       <span class="hljs-keyword">var</span> height = dscc.getHeight();
       <span class="hljs-built_in">console</span>.log(message)
       <span class="hljs-comment">// Create component as needed using message, height, and width...</span>
-});</code></pre>
+}, {<span class="hljs-attr">transform</span>: dscc.tableTransform});</code></pre>
 				<p>Note: It may be easier to develop this way by writing a simple script to combine
 				the two files. To do this using bash, for example, you would do the following:</p>
 				<h5 id="build-sh">build.sh</h5>

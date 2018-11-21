@@ -37,7 +37,7 @@ const main = () => {
     const height = getHeight();
     console.log(message)
     // Create component as needed using message, height, and width...
-  })
+  }, {transform: dscc.tableTransform})
 }
 main()
 ```
@@ -57,7 +57,7 @@ dscc.subscribeToData(function(message) {
       var height = dscc.getHeight();
       console.log(message)
       // Create component as needed using message, height, and width...
-});
+}, {transform: dscc.tableTransform});
 ```
 
 Note: It may be easier to develop this way by writing a simple script to combine

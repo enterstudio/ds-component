@@ -437,8 +437,6 @@ export enum ConfigStyleElementType {
   SELECT_RADIO = 'SELECT_RADIO',
 }
 
-export type RowValue = string | number | boolean;
-
 export interface MetricOptions {
   /**
    * The minimum number of metrics supported.
@@ -508,3 +506,62 @@ export interface TablesByType {
 }
 
 export type ParsedRowValue = string | number | boolean | ParsedImage;
+
+export type RowHeading = string;
+export type RowEntry = string | number | boolean;
+export type RowValue = RowHeading | RowEntry;
+
+export interface FieldsByConfigId {
+  [configId: string]: Field[];
+}
+
+export type StyleTheme = any;
+export type StyleEntry = any;
+export type StyleValue = StyleTheme | StyleEntry;
+
+export interface StyleById {
+  [styleId: string]: StyleValue;
+}
+
+export interface RowThing {
+  headers: RowHeading[];
+  rows: RowEntry[][];
+}
+
+export interface TableTables {
+  [TableType.DEFAULT]: RowThing;
+  [TableType.COMPARISON]?: RowThing;
+  [TableType.SUMMARY]?: RowThing;
+}
+
+export interface TableFormat {
+  fields: FieldsByConfigId;
+  style: StyleById;
+  tables: TableTables;
+}
+
+export type TableTransform = (message: Message) => TableFormat;
+
+export type ConfigId = string;
+
+export interface SubscriptionsOptions<T> {
+  transform: (message: Message) => T;
+}
+
+export interface ObjectRow {
+  [configId: string]: RowEntry[];
+}
+
+export interface ObjectTables {
+  [TableType.DEFAULT]: ObjectRow[];
+  [TableType.COMPARISON]?: ObjectRow[][];
+  [TableType.SUMMARY]?: ObjectRow[][];
+}
+
+export interface ObjectFormat {
+  fields: FieldsByConfigId;
+  style: StyleById;
+  tables: ObjectTables;
+}
+
+export type ObjectTransform = (message: Message) => ObjectFormat;

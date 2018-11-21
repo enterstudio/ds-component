@@ -15,22 +15,31 @@
 */
 import * as parse from 'url-parse';
 import {
+  ConfigData,
   ConfigDataElement,
-  ConfigDataElementType,
+  ConfigId,
+  ConfigStyle,
+  ConfigStyleElement,
   Field,
   FieldId,
+  FieldsByConfigId,
   FieldsById,
-  FieldType,
   Message,
   MessageType,
+  ObjectRow,
+  ObjectTables,
+  ObjectTransform,
   ParsedImage,
-  ParsedRowValue,
   PostMessage,
   Row,
-  RowByConfigId,
+  RowThing,
   RowValue,
+  StyleById,
+  SubscriptionsOptions,
   Table,
-  TablesByType,
+  TableFormat,
+  TableTables,
+  TableTransform,
   TableType,
 } from './types';
 
@@ -100,24 +109,26 @@ export const parseImage = (value: string): ParsedImage => {
 };
 
 /**
- * Returns the fields indexed by their Data Studio id. This is useful if you
- * have to lookups many fields so you don't have to do a full search every time.
- *
- * Usage:
- * ```
- * dscc.subscribeToData(function(message) {
- *   var fieldsByDSId = dscc.fieldsByDSId(message);
- *   var field1 = fieldsByDSId['field1Id'];
- *   var field2 = fieldsByDSId['field2Id'];
- * });
- * ```
+ * Returns the fields indexed by their Data Studio id.
  */
-export const fieldsById = (message: Message): FieldsById =>
+const fieldsById = (message: Message): FieldsById =>
   message.fields.reduce((acc: FieldsById, field: Field) => {
     acc[field.id] = field;
     return acc;
   }, {});
 
+/**
+ * Zips two arrays together into a new array. Uses the length of the shortest
+ * array.
+ *
+ * Usage:
+ * ```
+ * const a = [1, 2, 3];
+ * const b = ['a', 'b', 'c', 'd'];
+ * const zipped = zip2(a, b);
+ * expect(zipped).toEqual([[1, 'a'], [2, 'b'], [3, 'c']]);
+ * ```
+ */
 const zip2 = <T, U>(t: T[], u: U[]): Array<[T, U]> => {
   if (t.length < u.length) {
     return t.map((tEntry: T, idx: number): [T, U] => [tEntry, u[idx]]);
@@ -126,126 +137,194 @@ const zip2 = <T, U>(t: T[], u: U[]): Array<[T, U]> => {
   }
 };
 
-interface RowById {
-  [fieldId: string]: ParsedRowValue;
-}
-
-const toRowById = (
-  indexFields: FieldsById,
-  row: Row,
-  fields: FieldId[]
-): RowById => {
-  const matched = zip2(fields, row);
-  return matched.reduce(
-    (acc: RowById, [fieldId, rowValue]: [FieldId, RowValue]) => {
-      const field: Field = indexFields[fieldId];
-      const xformedValue =
-        field.type === FieldType.IMAGE
-          ? parseImage(rowValue as string)
-          : rowValue;
-      acc[fieldId] = xformedValue;
-      return acc;
-    },
-    {}
-  );
-};
-
-const toRowByConfigId = (
-  message: Message,
-  indexedFields: FieldsById,
-  fieldIds: FieldId[],
-  row: Row
-): RowByConfigId => {
-  const fieldRow: RowById = toRowById(indexedFields, row, fieldIds);
-  const dataFields = message.config.data.reduce((acc, data) => {
-    return acc.concat(data.elements);
-  }, []);
-  const concepts = dataFields.filter(dimensionOrMetric);
-  return concepts.reduce(
-    (rowObjects: RowByConfigId, element: ConfigDataElement) => {
-      const rowData = element.value.map(
-        (fieldId: FieldId) => fieldRow[fieldId]
-      );
-      rowObjects[element.id] = rowData;
-      return rowObjects;
-    },
-    {}
-  );
-};
-
-const dimensionOrMetric = (element: ConfigDataElement): boolean =>
-  element.type === ConfigDataElementType.DIMENSION ||
-  element.type === ConfigDataElementType.METRIC;
-
 /**
- * Returns all tables, with row values indexed by their configId.
- *
- * Usage:
- * ```
- * dscc.subscribeToData(function(message) {
- *   var rowsById = dscc.rowsByConfigId(message);
- *   console.log('rowsById', rowsById);
- * })
- * ```
+ * Flattens the configIds from a message into a single array. The config Ids
+ * will be repeated for the `METRIC`/`DIMENSION` selections. i.e. for a `METRIC`
+ * named `"metrics"` of `{min: 2, max:3}`, the value metrics will be repeated 2
+ * to 3 times depending on what values the user selects.
  */
-export const rowsByConfigId = (message: Message): TablesByType => {
-  const indexFields = fieldsById(message);
-  const thing: TablesByType = {
-    [TableType.COMPARISON]: [],
-    [TableType.DEFAULT]: [],
-    [TableType.SUMMARY]: [],
-  };
-  return message.dataResponse.tables.reduce(
-    (acc: TablesByType, table: Table) => {
-      const tableData: RowByConfigId[] = table.rows.map((row) =>
-        toRowByConfigId(message, indexFields, table.fields, row)
+const flattenConfigIds = (message: Message): ConfigId[] => {
+  const configIds: ConfigId[] = [];
+  message.config.data.forEach((configData: ConfigData) => {
+    configData.elements.forEach((configDataElement: ConfigDataElement) => {
+      configDataElement.value.forEach(() =>
+        configIds.push(configDataElement.id)
       );
-      acc[table.id] = tableData;
-      return acc;
-    },
-    {
-      [TableType.COMPARISON]: [],
-      [TableType.DEFAULT]: [],
-      [TableType.SUMMARY]: [],
-    }
-  );
+    });
+  });
+  return configIds;
 };
 
 /**
+ * Joins a single table row with the matching `ConfigId`
+ */
+const joinObjectRow = (configIds: ConfigId[]) => (row: Row): ObjectRow => {
+  const objectRow: ObjectRow = {};
+
+  zip2(row, configIds).forEach(([rowVal, configId]: [RowValue, ConfigId]) => {
+    if (objectRow[configId] === undefined) {
+      objectRow[configId] = [];
+    }
+    objectRow[configId].push(rowVal);
+  }, {});
+
+  return objectRow;
+};
+
+/**
+ * Formats tables into the `ObjectTables` format.
+ */
+const objectFormatTable = (message: Message): ObjectTables => {
+  const configIds = flattenConfigIds(message);
+  const indexFields = fieldsById(message);
+  const objectTables: ObjectTables = {[TableType.DEFAULT]: []};
+
+  message.dataResponse.tables.forEach((table: Table) => {
+    const objectRows: ObjectRow[] = table.rows.map(joinObjectRow(configIds));
+    objectTables[table.id] = objectRows;
+  });
+
+  return objectTables;
+};
+
+/**
+ * Formats tables into the `TableTables` format.
+ */
+const tableFormatTable = (message: Message): TableTables => {
+  const configIds = flattenConfigIds(message);
+  const indexFields = fieldsById(message);
+  const tableTables: TableTables = {
+    [TableType.DEFAULT]: {headers: [], rows: []},
+  };
+
+  message.dataResponse.tables.forEach((table: Table) => {
+    tableTables[table.id] = {
+      headers: configIds,
+      rows: table.rows,
+    };
+  });
+
+  return tableTables;
+};
+
+/**
+ * Returns the fields indexed by their config id. Since many fields can be in
+ * the same `METRIC`/`DIMENSION` selection, `configId` is mapped to `Field[]`.
+ */
+const fieldsByConfigId = (message: Message): FieldsByConfigId => {
+  const fieldsByDSId = fieldsById(message);
+  const fieldsBy: FieldsByConfigId = {};
+
+  message.config.data.forEach((configData: ConfigData) => {
+    configData.elements.forEach((configDataElement: ConfigDataElement) => {
+      fieldsBy[configDataElement.id] = configDataElement.value.map(
+        (dsId: FieldId): Field => fieldsByDSId[dsId]
+      );
+    });
+  });
+
+  return fieldsBy;
+};
+
+/**
+ * Flattens the style entries into a single object. `styleId`s should be unique.
+ */
+const flattenStyle = (message: Message): StyleById => {
+  const styleById: StyleById = {};
+  (message.config.style || []).forEach((styleEntry: ConfigStyle) => {
+    styleEntry.elements.forEach((configStyleElement: ConfigStyleElement) => {
+      if (styleById[configStyleElement.id] !== undefined) {
+        throw new Error(
+          `styleIds must be unique. Your styleId: '${
+            configStyleElement.id
+          }' is used more than once.`
+        );
+      }
+      styleById[configStyleElement.id] = {
+        value: configStyleElement.value,
+        defaultValue: configStyleElement.defaultValue,
+      };
+    });
+  }, {});
+  return styleById;
+};
+
+/**
+ * The transform to use for data in a Table format. i.e. `[[1, 2, 3], [4, 5, 6]]`
+ */
+export const tableTransform: TableTransform = (
+  message: Message
+): TableFormat => ({
+  tables: tableFormatTable(message),
+  fields: fieldsByConfigId(message),
+  style: flattenStyle(message),
+});
+
+/**
+ * The transform to use for data in an object format. i.e. `[{name: 'john', views: 3}, {name: 'suzie', views: 5}]`
+ */
+export const objectTransform: ObjectTransform = (message: Message) => ({
+  tables: objectFormatTable(message),
+  fields: fieldsByConfigId(message),
+  style: flattenStyle(message),
+});
+
+/*
  * Subscribes to messages from Data Studio. Calls `cb` for every new
  * [[MessageType.RENDER]] message. Returns a function that will unsubscribe
  * `callback` from further invocations.
  *
- * Usage:
+ * Usage - tableTransform:
  * ```
  * var unsubscribe = dscc.subscribeToData(function(message) {
+ *   console.log(message.tables)
  *   console.log(message.fields)
- *   console.log(message.config)
- *   console.log(message.dataResponse)
- * });
+ *   console.log(message.style)
+ * }, {transform: dscc.tableTransform});
+ *
+ * setTimeout(function() {
+ *   unsubscribe();
+ * }, 3000)
+ * ```
+
+ * Usage - objectTransform:
+ * ```
+ * var unsubscribe = dscc.subscribeToData(function(message) {
+ *   console.log(message.tables)
+ *   console.log(message.fields)
+ *   console.log(message.style)
+ * }, {transform: dscc.objectTransform});
  *
  * setTimeout(function() {
  *   unsubscribe();
  * }, 3000)
  * ```
  */
-export const subscribeToData = (
-  cb: (componentData: Message) => void
+export const subscribeToData = <T>(
+  cb: (componentData: T) => void,
+  options: SubscriptionsOptions<T>
 ): (() => void) => {
-  const onMessage = (message: PostMessage) => {
-    if (message.data.type === MessageType.RENDER) {
-      cb(message.data);
-    } else {
-      console.error(
-        `MessageType: ${
-          message.data.type
-        } is not supported by this version of the library.`
-      );
-    }
-  };
-  window.addEventListener('message', onMessage);
-  const componentId = getComponentId();
-  // Tell DataStudio that the viz is ready to get events.
-  window.parent.postMessage({componentId, type: 'vizReady'}, '*');
-  return () => window.removeEventListener('message', onMessage);
+  if (
+    (options.transform as any) === tableTransform ||
+    (options.transform as any) === objectTransform
+  ) {
+    const onMessage = (message: PostMessage) => {
+      if (message.data.type === MessageType.RENDER) {
+        cb(options.transform(message.data));
+      } else {
+        console.error(
+          `MessageType: ${
+            message.data.type
+          } is not supported by this version of the library.`
+        );
+      }
+    };
+    window.addEventListener('message', onMessage);
+    const componentId = getComponentId();
+    // Tell DataStudio that the viz is ready to get events.
+    window.parent.postMessage({componentId, type: 'vizReady'}, '*');
+    return () => window.removeEventListener('message', onMessage);
+  } else {
+    throw new Error(`Only the built in transform functions are supported.`);
+  }
 };
