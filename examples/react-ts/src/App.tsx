@@ -2,14 +2,13 @@ import * as dscc from '@google/dscc';
 import * as React from 'react';
 
 const Message = (message: dscc.TableFormat) => {
-  // const indexed = dscc.fieldsById(message);
   return (
     <table>
       <thead>
         <tr>
-          {message.tables[dscc.TableType.DEFAULT].headers.map(
-            (conceptName, idx) => <td key={`heading-${idx}`}>{conceptName}</td>
-          )}
+          {message.tables[dscc.TableType.DEFAULT].headers.map((header, idx) => (
+            <td key={`heading-${idx}`}>{header.name}</td>
+          ))}
         </tr>
       </thead>
       <tbody>
@@ -64,66 +63,66 @@ class App extends React.Component<{}, State> {
 
 export default App;
 
-/* setTimeout(() => {
- *   const message: dscc.Message = {
- *     config: {
- *       data: [
- *         {
- *           elements: [
- *             {
- *               id: 'hi',
- *               label: 'hi',
- *               options: {
- *                 max: 1,
- *                 min: 1,
- *               },
- *               type: dscc.ConfigDataElementType.DIMENSION,
- *               value: ['field1'],
- *             },
- *             {
- *               id: 'there',
- *               label: 'there',
- *               options: {
- *                 max: 1,
- *                 min: 1,
- *               },
- *               type: dscc.ConfigDataElementType.METRIC,
- *               value: ['field2'],
- *             },
- *           ],
- *           id: 'hi',
- *           label: 'hi',
- *         },
- *       ],
- *       style: [],
- *       themeStyle: undefined,
- *     },
- *     dataResponse: {
- *       tables: [
- *         {
- *           fields: ['field1', 'field2'],
- *           id: dscc.TableType.DEFAULT,
- *           rows: [['matt', 1], ['yulan', 3], ['minhaz', 5]],
- *         },
- *       ],
- *     },
- *     fields: [
- *       {
- *         concept: dscc.ConceptType.DIMENSION,
- *         description: "A person's name.",
- *         id: 'field1',
- *         name: 'Name',
- *         type: dscc.FieldType.TEXT,
- *       },
- *       {
- *         concept: dscc.ConceptType.METRIC,
- *         description: "A person's favorite number.",
- *         id: 'field2',
- *         name: 'Favorite Number',
- *         type: dscc.FieldType.NUMBER,
- *       },
- *     ],
- *     type: dscc.MessageType.RENDER,
- *   };
- *   window.parent.postMessage(message, '*');
- * }, 1000); */
+// setTimeout(() => {
+//   const message: dscc.Message = {
+//     config: {
+//       data: [
+//         {
+//           elements: [
+//             {
+//               id: 'hi',
+//               label: 'hi',
+//               options: {
+//                 max: 1,
+//                 min: 1,
+//               },
+//               type: dscc.ConfigDataElementType.DIMENSION,
+//               value: ['field1'],
+//             },
+//             {
+//               id: 'there',
+//               label: 'there',
+//               options: {
+//                 max: 1,
+//                 min: 1,
+//               },
+//               type: dscc.ConfigDataElementType.METRIC,
+//               value: ['field2'],
+//             },
+//           ],
+//           id: 'hi',
+//           label: 'hi',
+//         },
+//       ],
+//       style: [],
+//       themeStyle: undefined,
+//     },
+//     dataResponse: {
+//       tables: [
+//         {
+//           fields: ['field1', 'field2'],
+//           id: dscc.TableType.DEFAULT,
+//           rows: [['matt', 1], ['yulan', 3], ['minhaz', 5]],
+//         },
+//       ],
+//     },
+//     fields: [
+//       {
+//         concept: dscc.ConceptType.DIMENSION,
+//         description: "A person's name.",
+//         id: 'field1',
+//         name: 'Name',
+//         type: dscc.FieldType.TEXT,
+//       },
+//       {
+//         concept: dscc.ConceptType.METRIC,
+//         description: "A person's favorite number.",
+//         id: 'field2',
+//         name: 'Favorite Number',
+//         type: dscc.FieldType.NUMBER,
+//       },
+//     ],
+//     type: dscc.MessageType.RENDER,
+//   };
+//   window.parent.postMessage(message, '*');
+// }, 1000);
