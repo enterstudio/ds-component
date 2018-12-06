@@ -251,8 +251,20 @@ export interface Table {
   /**
    * The rows of data Values.
    */
-  rows: Row[];
+  rows: DSRow[];
 }
+
+/**
+ * A row of values.
+ *
+ * The order of values corresponds to the order of the fields of all data element field objects.
+ */
+
+export type DSRow = DSRowValue[];
+/**
+ * A value for an entry in a DSRow.
+ */
+export type DSRowValue = string | number | boolean;
 
 export interface ConfigDataElement {
   /**
@@ -315,13 +327,6 @@ export enum TableType {
   COMPARISON = 'COMPARISON',
   SUMMARY = 'SUMMARY',
 }
-
-/**
- * A row of values.
- *
- * The order of values corresponds to the order of the fields of all data element field objects.
- */
-export type Row = RowValue[];
 
 export enum ConfigDataElementType {
   /**
@@ -507,9 +512,9 @@ export interface TablesByType {
 
 export type ParsedRowValue = string | number | boolean | ParsedImage;
 
-export type RowHeading = string;
+export type RowHeading = Field & {configId: string};
 export type RowEntry = string | number | boolean;
-export type RowValue = RowHeading | RowEntry;
+export type Row = RowEntry[];
 
 export interface FieldsByConfigId {
   [configId: string]: Field[];
@@ -525,7 +530,7 @@ export interface StyleById {
 
 export interface RowThing {
   headers: RowHeading[];
-  rows: RowEntry[][];
+  rows: Row[];
 }
 
 export interface TableTables {

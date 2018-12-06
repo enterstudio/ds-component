@@ -229,44 +229,62 @@ test('subscribeToData works', () => {
 });
 
 test('tableTransform empty style', () => {
+  const expectedFields = {
+    dimensions: [
+      {
+        id: 'dimensionField1Id',
+        name: 'dimensionField1Name',
+        description: 'dimensionField1Description',
+        type: sut.FieldType.TEXT,
+        concept: sut.ConceptType.DIMENSION,
+      },
+      {
+        id: 'dimensionField2Id',
+        name: 'dimensionField2Name',
+        description: 'dimensionField2Description',
+        type: sut.FieldType.BOOLEAN,
+        concept: sut.ConceptType.DIMENSION,
+      },
+    ],
+    metrics: [
+      {
+        id: 'metricField1Id',
+        name: 'metricField1Name',
+        description: 'metricField1Description',
+        type: sut.FieldType.NUMBER,
+        concept: sut.ConceptType.METRIC,
+      },
+      {
+        id: 'metricField2Id',
+        name: 'metricField2Name',
+        description: 'metricField2Description',
+        type: sut.FieldType.PERCENT,
+        concept: sut.ConceptType.METRIC,
+      },
+    ],
+  };
   const expected: sut.TableFormat = {
-    fields: {
-      dimensions: [
-        {
-          id: 'dimensionField1Id',
-          name: 'dimensionField1Name',
-          description: 'dimensionField1Description',
-          type: sut.FieldType.TEXT,
-          concept: sut.ConceptType.DIMENSION,
-        },
-        {
-          id: 'dimensionField2Id',
-          name: 'dimensionField2Name',
-          description: 'dimensionField2Description',
-          type: sut.FieldType.BOOLEAN,
-          concept: sut.ConceptType.DIMENSION,
-        },
-      ],
-      metrics: [
-        {
-          id: 'metricField1Id',
-          name: 'metricField1Name',
-          description: 'metricField1Description',
-          type: sut.FieldType.NUMBER,
-          concept: sut.ConceptType.METRIC,
-        },
-        {
-          id: 'metricField2Id',
-          name: 'metricField2Name',
-          description: 'metricField2Description',
-          type: sut.FieldType.PERCENT,
-          concept: sut.ConceptType.METRIC,
-        },
-      ],
-    },
+    fields: expectedFields,
     tables: {
       [sut.TableType.DEFAULT]: {
-        headers: ['dimensions', 'dimensions', 'metrics', 'metrics'],
+        headers: [
+          {
+            ...expectedFields.dimensions[0],
+            configId: 'dimensions',
+          },
+          {
+            ...expectedFields.dimensions[1],
+            configId: 'dimensions',
+          },
+          {
+            ...expectedFields.metrics[0],
+            configId: 'metrics',
+          },
+          {
+            ...expectedFields.metrics[1],
+            configId: 'metrics',
+          },
+        ],
         rows: [['1', false, 1, 0.01], ['2', true, 2, 0.02]],
       },
     },
@@ -277,44 +295,62 @@ test('tableTransform empty style', () => {
 });
 
 test('tableTransform works', () => {
+  const expectedFields = {
+    dimensions: [
+      {
+        id: 'dimensionField1Id',
+        name: 'dimensionField1Name',
+        description: 'dimensionField1Description',
+        type: sut.FieldType.TEXT,
+        concept: sut.ConceptType.DIMENSION,
+      },
+      {
+        id: 'dimensionField2Id',
+        name: 'dimensionField2Name',
+        description: 'dimensionField2Description',
+        type: sut.FieldType.BOOLEAN,
+        concept: sut.ConceptType.DIMENSION,
+      },
+    ],
+    metrics: [
+      {
+        id: 'metricField1Id',
+        name: 'metricField1Name',
+        description: 'metricField1Description',
+        type: sut.FieldType.NUMBER,
+        concept: sut.ConceptType.METRIC,
+      },
+      {
+        id: 'metricField2Id',
+        name: 'metricField2Name',
+        description: 'metricField2Description',
+        type: sut.FieldType.PERCENT,
+        concept: sut.ConceptType.METRIC,
+      },
+    ],
+  };
   const expected: sut.TableFormat = {
-    fields: {
-      dimensions: [
-        {
-          id: 'dimensionField1Id',
-          name: 'dimensionField1Name',
-          description: 'dimensionField1Description',
-          type: sut.FieldType.TEXT,
-          concept: sut.ConceptType.DIMENSION,
-        },
-        {
-          id: 'dimensionField2Id',
-          name: 'dimensionField2Name',
-          description: 'dimensionField2Description',
-          type: sut.FieldType.BOOLEAN,
-          concept: sut.ConceptType.DIMENSION,
-        },
-      ],
-      metrics: [
-        {
-          id: 'metricField1Id',
-          name: 'metricField1Name',
-          description: 'metricField1Description',
-          type: sut.FieldType.NUMBER,
-          concept: sut.ConceptType.METRIC,
-        },
-        {
-          id: 'metricField2Id',
-          name: 'metricField2Name',
-          description: 'metricField2Description',
-          type: sut.FieldType.PERCENT,
-          concept: sut.ConceptType.METRIC,
-        },
-      ],
-    },
+    fields: expectedFields,
     tables: {
       [sut.TableType.DEFAULT]: {
-        headers: ['dimensions', 'dimensions', 'metrics', 'metrics'],
+        headers: [
+          {
+            ...expectedFields.dimensions[0],
+            configId: 'dimensions',
+          },
+          {
+            ...expectedFields.dimensions[1],
+            configId: 'dimensions',
+          },
+          {
+            ...expectedFields.metrics[0],
+            configId: 'metrics',
+          },
+          {
+            ...expectedFields.metrics[1],
+            configId: 'metrics',
+          },
+        ],
         rows: [['1', false, 1, 0.01], ['2', true, 2, 0.02]],
       },
     },

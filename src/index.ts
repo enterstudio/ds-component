@@ -32,8 +32,9 @@ import {
   ParsedImage,
   PostMessage,
   Row,
+  RowHeading,
   RowThing,
-  RowValue,
+  DSRowValue,
   StyleById,
   SubscriptionsOptions,
   Table,
@@ -161,7 +162,7 @@ const flattenConfigIds = (message: Message): ConfigId[] => {
 const joinObjectRow = (configIds: ConfigId[]) => (row: Row): ObjectRow => {
   const objectRow: ObjectRow = {};
 
-  zip2(row, configIds).forEach(([rowVal, configId]: [RowValue, ConfigId]) => {
+  zip2(row, configIds).forEach(([rowVal, configId]: [DSRowValue, ConfigId]) => {
     if (objectRow[configId] === undefined) {
       objectRow[configId] = [];
     }
@@ -191,7 +192,22 @@ const objectFormatTable = (message: Message): ObjectTables => {
  * Formats tables into the `TableTables` format.
  */
 const tableFormatTable = (message: Message): TableTables => {
+  const fieldsBy: FieldsByConfigId = fieldsByConfigId(message);
   const configIds = flattenConfigIds(message);
+  const configIdIdx = {};
+  const headers: RowHeading[] = configIds.map(
+    (configId: string): RowHeading => {
+      if (configIdIdx[configId] === undefined) {
+        configIdIdx[configId] = 0;
+      } else {
+        configIdIdx[configId]++;
+      }
+      let idx = configIdIdx[configId];
+      const field = fieldsBy[configId][idx];
+      const heading: RowHeading = {...field, configId};
+      return heading;
+    }
+  );
   const indexFields = fieldsById(message);
   const tableTables: TableTables = {
     [TableType.DEFAULT]: {headers: [], rows: []},
@@ -199,7 +215,7 @@ const tableFormatTable = (message: Message): TableTables => {
 
   message.dataResponse.tables.forEach((table: Table) => {
     tableTables[table.id] = {
-      headers: configIds,
+      headers,
       rows: table.rows,
     };
   });
