@@ -17,9 +17,11 @@ import * as parse from 'url-parse';
 import {
   ConfigData,
   ConfigDataElement,
+  ConfigDataElementType,
   ConfigId,
   ConfigStyle,
   ConfigStyleElement,
+  DSRowValue,
   Field,
   FieldId,
   FieldsByConfigId,
@@ -34,7 +36,6 @@ import {
   Row,
   RowHeading,
   RowThing,
-  DSRowValue,
   StyleById,
   SubscriptionsOptions,
   Table,
@@ -138,20 +139,45 @@ const zip2 = <T, U>(t: T[], u: U[]): Array<[T, U]> => {
   }
 };
 
+// `.sort` isn't stable, but if you compare items, and when they are equal use
+// the original index, it is then stable.
+const stableSort = <T>(arr: T[], compare: (a: T, b: T) => number): T[] =>
+  arr
+    .map((item, index) => ({item, index}))
+    .sort((a, b) => compare(a.item, b.item) || a.index - b.index)
+    .map(({item}) => item);
+
+const dimensionOrMetric = (cde: ConfigDataElement): boolean =>
+  cde.type === ConfigDataElementType.DIMENSION ||
+  cde.type === ConfigDataElementType.METRIC;
+
+const toNum = (cdet: ConfigDataElementType) =>
+  cdet === ConfigDataElementType.DIMENSION ? -1 : 1;
+
 /**
  * Flattens the configIds from a message into a single array. The config Ids
  * will be repeated for the `METRIC`/`DIMENSION` selections. i.e. for a `METRIC`
  * named `"metrics"` of `{min: 2, max:3}`, the value metrics will be repeated 2
  * to 3 times depending on what values the user selects.
+ *
+ * Note: this is relying on the fact that the postMessage from DataStudio has
+ * the fields sorted to be dimensions, followed by metrics.
  */
 const flattenConfigIds = (message: Message): ConfigId[] => {
-  const configIds: ConfigId[] = [];
+  const configDataElements: ConfigDataElement[] = [];
   message.config.data.forEach((configData: ConfigData) => {
     configData.elements.forEach((configDataElement: ConfigDataElement) => {
-      configDataElement.value.forEach(() =>
-        configIds.push(configDataElement.id)
-      );
+      configDataElements.push(configDataElement);
     });
+  });
+  const dimnsAndMets = configDataElements.filter(dimensionOrMetric);
+  const sorted = stableSort(
+    dimnsAndMets,
+    (a, b) => toNum(a.type) - toNum(b.type)
+  );
+  const configIds: ConfigId[] = [];
+  sorted.forEach((configDataElement: ConfigDataElement) => {
+    configDataElement.value.forEach(() => configIds.push(configDataElement.id));
   });
   return configIds;
 };
@@ -202,7 +228,7 @@ const tableFormatTable = (message: Message): TableTables => {
       } else {
         configIdIdx[configId]++;
       }
-      let idx = configIdIdx[configId];
+      const idx = configIdIdx[configId];
       const field = fieldsBy[configId][idx];
       const heading: RowHeading = {...field, configId};
       return heading;
@@ -227,7 +253,7 @@ const tableFormatTable = (message: Message): TableTables => {
  * Returns the fields indexed by their config id. Since many fields can be in
  * the same `METRIC`/`DIMENSION` selection, `configId` is mapped to `Field[]`.
  */
-const fieldsByConfigId = (message: Message): FieldsByConfigId => {
+export const fieldsByConfigId = (message: Message): FieldsByConfigId => {
   const fieldsByDSId = fieldsById(message);
   const fieldsBy: FieldsByConfigId = {};
 

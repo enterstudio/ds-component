@@ -14,6 +14,7 @@
   limitations under the License.
 */
 import * as sut from '../src/index';
+import {ConfigDataElementType} from '../src/index';
 
 const testDimensionFields = (numRequested: number): sut.Field[] => {
   const fields = [
@@ -494,4 +495,104 @@ test('Error thrown when styleIds are not unique', () => {
   expect(() => {
     sut.objectTransform(message);
   }).toThrowError('styleInnerId1');
+});
+
+test('If elements are dim met dim dim, they have to be sorted specially.', () => {
+  const messageDimMetDimDim: sut.Message = {
+    type: sut.MessageType.RENDER,
+    config: {
+      style: [],
+      data: [
+        {
+          id: 'concepts',
+          elements: [
+            {
+              id: 'index',
+              label: 'Index Dimension',
+              type: sut.ConfigDataElementType.DIMENSION,
+              options: {max: 1, min: 1},
+              value: ['qt_6k2n466ktb'],
+            },
+            {
+              id: 'arbitraryMetric',
+              label: 'Aribrary Metric',
+              type: sut.ConfigDataElementType.METRIC,
+              options: {max: 1, min: 1},
+              value: ['qt_t43n466ktb'],
+            },
+            {
+              id: 'dateDimension',
+              label: 'Date',
+              type: sut.ConfigDataElementType.DIMENSION,
+              options: {max: 1, min: 1, supportedTypes: ['TIME']},
+              value: ['qt_s43n466ktb'],
+            },
+            {
+              id: 'label',
+              label: 'Timeline Labels',
+              type: sut.ConfigDataElementType.DIMENSION,
+              options: {max: 1, min: 1},
+              value: ['qt_zc3n466ktb'],
+            },
+          ],
+          label: 'Concepts',
+        },
+      ],
+    },
+    fields: [
+      {
+        id: 'qt_6k2n466ktb',
+        name: 'Source',
+        type: sut.FieldType.TEXT,
+        concept: sut.ConceptType.DIMENSION,
+      },
+      {
+        id: 'qt_s43n466ktb',
+        name: 'Date',
+        type: sut.FieldType.YEAR_MONTH_DAY,
+        concept: sut.ConceptType.DIMENSION,
+      },
+      {
+        id: 'qt_zc3n466ktb',
+        name: 'Medium',
+        type: sut.FieldType.TEXT,
+        concept: sut.ConceptType.DIMENSION,
+      },
+      {
+        id: 'qt_t43n466ktb',
+        name: 'Sessions',
+        type: sut.FieldType.NUMBER,
+        concept: sut.ConceptType.METRIC,
+      },
+    ],
+    dataResponse: {
+      tables: [
+        {
+          id: sut.TableType.DEFAULT,
+          fields: [
+            'qt_6k2n466ktb',
+            'qt_s43n466ktb',
+            'qt_zc3n466ktb',
+            'qt_t43n466ktb',
+          ],
+          rows: [
+            ['google', '20181126', 'organic', 2105],
+            ['google', '20181205', 'organic', 1775],
+            ['google', '20181206', 'organic', 1764],
+          ],
+        },
+      ],
+    },
+  };
+  const actual: sut.TableFormat = sut.tableTransform(messageDimMetDimDim);
+
+  const headers = actual.tables[sut.TableType.DEFAULT].headers;
+  expect(headers[0].configId === 'index');
+  expect(headers[0].configId === 'dateDimension');
+  expect(headers[0].configId === 'label');
+  expect(headers[0].configId === 'arbitraryMetric');
+
+  const rows = actual.tables[sut.TableType.DEFAULT].rows;
+  expect(rows[0][0]).toEqual('google');
+  expect(rows[0][3]).toEqual(2105);
 });

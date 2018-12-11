@@ -45,7 +45,7 @@ export interface Field {
   /**
    * The user-friendly description of the field.
    */
-  description: string;
+  description?: string;
   /**
    * The field type.
    */
