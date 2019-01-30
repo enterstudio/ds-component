@@ -218,6 +218,12 @@ test('subscribeToData works', () => {
   window.addEventListener = addEventListenerMock;
   window.parent.postMessage = postMessageMock;
   window.removeEventListener = removeEventListenerMock;
+  // This is a hack since we can't do `window.frameElement = {...}`
+  Object.defineProperty(window, 'frameElement', {
+    get: () => ({
+      getAttribute: () => '123',
+    }),
+  });
 
   const unSub = sut.subscribeToData(
     (actual: sut.TableFormat) => {
