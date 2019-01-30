@@ -13,7 +13,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-import * as parse from 'url-parse';
 import {
   ConfigData,
   ConfigDataElement,
@@ -72,8 +71,7 @@ export const getHeight = (): number => document.documentElement.clientHeight;
 
 /**
  * Returns the componentId of the vis. Component ids uniquely identify a vis to
- * Data Studio, and are sent with `postMessage`s to let Data Studio know which
- * vis sent data.
+ * Data Studio.
  *
  * Usage:
  * ```
@@ -81,10 +79,8 @@ export const getHeight = (): number => document.documentElement.clientHeight;
  * console.log('My componentId is: ', myComponentId);
  * ```
  */
-const getComponentId = (): string => {
-  const parsed = parse(window.parent.location.href, true);
-  return parsed.query.componentId;
-};
+const getComponentId = (): string =>
+  window.frameElement.getAttribute('componentid');
 
 /**
  * Parses a `'\u00a0\u00a0'` delimited string into component parts. If any parts
