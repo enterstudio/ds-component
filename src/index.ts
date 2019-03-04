@@ -14,6 +14,7 @@
   limitations under the License.
 */
 import {
+  ActionId,
   ConfigData,
   ConfigDataElement,
   ConfigDataElementType,
@@ -25,6 +26,10 @@ import {
   FieldId,
   FieldsByConfigId,
   FieldsById,
+  FilterInteractionData,
+  Interaction,
+  InteractionData,
+  InteractionMessage,
   Message,
   MessageType,
   ObjectRow,
@@ -34,7 +39,7 @@ import {
   PostMessage,
   Row,
   RowHeading,
-  RowThing,
+  SendInteraction,
   StyleById,
   SubscriptionsOptions,
   Table,
@@ -42,6 +47,8 @@ import {
   TableTables,
   TableTransform,
   TableType,
+  ToDSMessageType,
+  VizReadyMessage,
 } from './types';
 
 // Make all exported types available to external users.
@@ -360,9 +367,28 @@ export const subscribeToData = <T>(
     window.addEventListener('message', onMessage);
     const componentId = getComponentId();
     // Tell DataStudio that the viz is ready to get events.
-    window.parent.postMessage({componentId, type: 'vizReady'}, '*');
+    const vizReadyMessage: VizReadyMessage = {
+      componentId,
+      type: ToDSMessageType.VIZ_READY,
+    };
+    window.parent.postMessage(vizReadyMessage, '*');
     return () => window.removeEventListener('message', onMessage);
   } else {
     throw new Error(`Only the built in transform functions are supported.`);
   }
+};
+
+/*
+ * Does the thing that interactions should do.
+ */
+export const sendInteraction: SendInteraction = (
+  interaction: Interaction,
+  actionId: ActionId,
+  data: InteractionData
+) => {
+  const interactionMessage: InteractionMessage = {
+    type: ToDSMessageType.INTERACTION,
+    data: Object.assign({}, data, {type: interaction, actionId}),
+  };
+  window.parent.postMessage(interactionMessage, '*');
 };

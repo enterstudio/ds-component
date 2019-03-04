@@ -19,6 +19,10 @@ export interface Message {
    * The data corresponding to the data config state of the component.
    */
   dataResponse: DataResponse;
+  /**
+   * TBD.
+   */
+  behavior: object;
 }
 
 export interface Config {
@@ -570,3 +574,49 @@ export interface ObjectFormat {
 }
 
 export type ObjectTransform = (message: Message) => ObjectFormat;
+
+export enum Interaction {
+  FILTER = 'FILTER',
+}
+
+export type InteractionData = FilterInteractionData;
+
+export type ActionId = string;
+export type ComponentId = string;
+export type DimensionId = string;
+export type FilterParamValue = string | number | boolean;
+
+export interface FilterParams {
+  concepts: DimensionId[];
+  values: FilterParamValue[][];
+}
+
+export interface FilterInteractionData {
+  params: FilterParams;
+}
+
+export enum ToDSMessageType {
+  VIZ_READY = 'vizReady',
+  INTERACTION = 'vizAction',
+}
+
+export interface VizReadyMessage {
+  componentId: ComponentId;
+  type: ToDSMessageType.VIZ_READY;
+}
+
+export interface InteractionMessage {
+  type: ToDSMessageType.INTERACTION;
+  data: InteractionData & {actionId: ActionId};
+}
+
+export interface SendInteraction {
+  // TODO - remove this once there is more than one interaction type.
+  // tslint:disable-next-line callable-types
+  (
+    interaction: Interaction.FILTER,
+    actionId: ActionId,
+    data: FilterInteractionData
+  ): void;
+  // TODO - When there are more Interaction types, the new ones should be added here with their own signature.
+}
